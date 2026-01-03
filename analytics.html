@@ -3,21 +3,311 @@
 <head>
     <meta charset="utf-8" />
     <title>Analytics — FareComparator</title>
-    <link rel="stylesheet" href="analytics.css" />
+<!--    <link rel="stylesheet" href="analytics.css" />-->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
-        .chart-wrapper { height: 330px; position: relative; }
+        /* YEH ADD KARO STYLE KE SHURU MEIN */
+        :root {
+          --primary: #3b82f6;
+          --primary-dark: #2b5de7;
+          --text: #1e293b;
+          --text-muted: #64748b;
+          --bg: #f8fafc;
+          --card: #ffffff;
+          --border: #e2e8f0;
+          --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+          --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+          --radius: 12px;
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, sans-serif;
+          background: var(--bg);
+          color: var(--text);
+          line-height: 1.6;
+          min-height: 100vh;
+        }
+
+        .app-shell {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+        }
+
+        .app-main {
+          flex: 1;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 2.5rem 1.5rem;
+        }
+
+        /* YE BHI ADD KARO RESPONSIVE KE LIYE */
+        @media (max-width: 768px) {
+          .app-logo {
+            padding-left: 20px;
+          }
+
+          .app-nav-links {
+            padding-right: 20px;
+            gap: 1rem;
+            font-size: 14px;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .app-main {
+            padding: 1.5rem 1rem;
+          }
+        }
+        .chart-wrapper {
+          height: 530px;
+          width: 1060px;
+          max-width: 100%;
+          margin: 0 auto;
+          position: relative;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .chart-wrapper canvas {
+          display: block;
+          width: 100% !important;
+          height: 100% !important;
+          align-items: center;
+          justify-content: center;
+        }
         .loading-overlay {
           display: none;
           position: absolute;
           inset: 0;
-          background: rgba(255,255,255,0.75);
+          background: rgba(255, 255, 255, 0.75);
           align-items: center;
           justify-content: center;
           font-weight: 700;
           color: #333;
           z-index: 999;
+        }
+
+        /* Hover effect for stat cards */
+        .stat-card {
+          transition: all 0.3s ease;
+          border: 1px solid #eef2f6;
+          border-radius: 12px;
+          padding: 1rem;
+          background: #fff;
+        }
+        .stat-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+          border-color: #ddd;
+        }
+
+        /* Improved User ID section */
+        .user-id-section {
+          text-align: center;
+          padding: 1.5rem 1rem;
+          background: rgba(255, 255, 255, 0.75);
+          margin-bottom: 1.5rem;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        .user-id-section h2 {
+          margin-bottom: 0.8rem;
+          color: #333;
+          font-size: 1.4rem;
+        }
+        .user-id-input-group {
+          display: flex;
+          max-width: 400px;
+          margin: 0 auto;
+          gap: 0.5rem;
+          justify-content: center;
+        }
+        .user-id-input-group input {
+          flex: 1;
+          min-width: 150px;
+          padding: 0.6rem 1rem;
+          font-size: 1rem;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          outline: none;
+          transition: border-color 0.3s;
+        }
+        .user-id-input-group input:focus {
+          border-color: #1f77b4;
+        }
+        .user-id-input-group button {
+          padding: 0.6rem 1.5rem;
+          font-size: 1rem;
+          background-color: #3b82f6;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+        .user-id-input-group button:hover {
+          background-color: #2b5de7;
+        }
+
+        /* Single column layout for all charts */
+        .charts-container {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+        .card {
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          transition: box-shadow 0.3s;
+        }
+        .card:hover {
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+          padding: 0rem 1rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .card-title {
+          font-size: 1.2rem;
+          margin: 0;
+          margin-bottom: 10px;
+        }
+        .text-muted.small {
+          padding: 0.8rem 1rem;
+          color: #666;
+          line-height: 1.5;
+        }
+        .app-nav {
+          background: #0f1225;
+          color: #fff;
+          height: 76px;
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .app-nav-container {
+          width: 100%;
+          max-width: 1200px; /* SAME AS .app-main */
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .app-brand {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-weight: bold;
+          flex-shrink: 0;
+        }
+
+        .app-logo {
+          height: 32px;
+          width: auto;
+          display: block;
+        }
+
+        .app-nav-links {
+          font-size: 16px;
+          display: flex;
+          gap: 1.5rem;
+          flex-shrink: 0;
+        }
+
+        /* Rest of the styles remain same... */
+        .app-nav-links a {
+          color: rgba(255, 255, 255, 0.823);
+          text-decoration: none;
+          position: relative;
+          padding: 0.5rem 0;
+          transition: all 0.3s ease;
+        }
+
+        .app-nav-links a:hover {
+          color: rgba(255, 255, 255, 1);
+        }
+
+        .app-nav-links a::after {
+          content: "";
+          position: absolute;
+          width: 0;
+          height: 2px;
+          bottom: 0;
+          left: 0;
+          background: #a992df;
+          transition: width 0.3s ease;
+          border-radius: 1px;
+        }
+
+        .app-nav-links a:hover::after {
+          width: 100%;
+        }
+
+        .app-nav-links a.active {
+          color: #a992df;
+          font-weight: 500;
+        }
+
+        .app-nav-links a.active::after {
+          width: 100%;
+          background: #a992df;
+        }
+
+        @media (max-width: 768px) {
+          .app-nav-container {
+            padding: 0 1rem;
+          }
+
+          .app-nav-links {
+            gap: 1rem;
+            font-size: 14px;
+          }
+        } /* Professional & Compact Select Dropdown */
+        select {
+          padding: 0.6rem 2.2rem 0.6rem 0.9rem; /* Thoda kam padding */
+          font-size: 0.93rem;
+          font-weight: 500;
+          color: var(--text);
+          background-color: #ffffff;
+          border: 1.5px solid var(--border);
+          border-radius: 10px;
+          outline: none;
+          cursor: pointer;
+          appearance: none;
+          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+          background-repeat: no-repeat;
+          background-position: right 0.7rem center;
+          background-size: 11px;
+          transition: all 0.25s ease;
+          box-shadow: var(--shadow-sm);
+          min-width: 140px; /* Minimum width set — zyada stretch nahi hoga */
+          max-width: 180px; /* Maximum width limit — compact rahega */
+          width: auto; /* Content ke hisaab se adjust hoga */
+        }
+
+        select:hover {
+          border-color: #cbd5e1;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        select:focus {
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
     </style>
 </head>
@@ -25,477 +315,735 @@
 <body>
 <div class="app-shell">
     <header class="app-nav">
-        <div class="app-brand"><span>FareComparator</span></div>
-        <nav class="app-nav-links">
-            <a href="index.html">index</a>
-            <a href="history.html">History</a>
-            <a href="analytics.html" class="active">Analytics</a>
-        </nav>
+        <div class="app-nav-container">
+            <!-- ADD THIS WRAPPER -->
+            <div class="app-brand">
+                <img src="logo.svg" alt="FareComparator Logo" class="app-logo" />
+            </div>
+            <nav class="app-nav-links">
+                <a href="index.html">Compare</a>
+                <a href="history.html">History</a>
+                <a href="analytics.html" class="active">Analytics</a>
+                <a href="contact.html">Contact Us</a>
+            </nav>
+        </div>
     </header>
 
     <main class="app-main">
+        <!-- Improved User ID Input at Top -->
+        <section class="user-id-section card">
+            <h2>Enter your User ID to view Analytics</h2>
+            <div class="user-id-input-group">
+                <input
+                        id="analyticsUserId"
+                        type="text"
+                        placeholder="e.g. 123"
+                        value=""
+                />
+                <button id="loadAnalytics">Load</button>
+            </div>
+        </section>
 
-        <!-- SUMMARY CARD -->
+        <!-- SUMMARY CARD (Full width) -->
         <section class="card">
             <div class="card-header">
                 <div>
                     <h1 class="card-title">Analytics Summary</h1>
-                    <p class="text-muted">Overview for user.</p>
                 </div>
-                <span class="chip">Analytics API</span>
             </div>
 
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem">
-                <div class="stat-card card">
+            <div
+                    style="
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 1rem;
+              padding: 0rem 1rem;
+            "
+            >
+                <div class="stat-card">
                     <div class="text-muted">Total Requests</div>
-                    <div id="totalRequests" style="font-weight:700;font-size:1.4rem">—</div>
+                    <div
+                            id="totalRequests"
+                            style="font-weight: 700; font-size: 1.4rem"
+                    >
+                        —
+                    </div>
                 </div>
-                <div class="stat-card card">
+                <div class="stat-card">
                     <div class="text-muted">Average Savings (₹)</div>
-                    <div id="avgSavings" style="font-weight:700;font-size:1.4rem">—</div>
+                    <div id="avgSavings" style="font-weight: 700; font-size: 1.4rem">
+                        —
+                    </div>
                 </div>
-                <div class="stat-card card">
+                <div class="stat-card">
                     <div class="text-muted">Most Used Provider</div>
-                    <div id="mostUsed" style="font-weight:700;font-size:1.2rem">—</div>
+                    <div id="mostUsed" style="font-weight: 700; font-size: 1.2rem">
+                        —
+                    </div>
                 </div>
-                <div class="stat-card card">
-                    <div class="text-muted">CO₂ Reduced (30d)</div>
-                    <div id="summaryCo2" style="font-weight:700;font-size:1.2rem">—</div>
+                <div class="stat-card">
+                    <div class="text-muted">CO₂ Emmited</div>
+                    <div id="summaryCo2" style="font-weight: 700; font-size: 1.2rem">
+                        —
+                    </div>
                 </div>
-
-                <div class="stat-card card">
+                <div class="stat-card">
                     <div class="text-muted">Distance Walked</div>
-                    <div id="summaryWalked" style="font-weight:700;font-size:1.2rem">—</div>
+                    <div
+                            id="summaryWalked"
+                            style="font-weight: 700; font-size: 1.2rem"
+                    >
+                        —
+                    </div>
                 </div>
-
-                <div class="stat-card card">
+                <div class="stat-card">
                     <div class="text-muted">Calories Burned</div>
-                    <div id="summaryCalories" style="font-weight:700;font-size:1.2rem">—</div>
+                    <div
+                            id="summaryCalories"
+                            style="font-weight: 700; font-size: 1.2rem"
+                    >
+                        —
+                    </div>
                 </div>
-
             </div>
         </section>
 
-        <!-- PROVIDER-WISE SAVINGS TREND -->
-        <section class="card">
-            <div class="card-header">
-                <h2 class="card-title">Provider-wise Savings Trend</h2>
-                <div style="display:flex;gap:.5rem;align-items:center">
-                    <input id="analyticsUserId" value="123"
-                           style="padding:.4rem;border-radius:8px;border:1px solid #eef2f6" />
-                    <button id="loadAnalytics" class="btn btn-primary btn-sm">Load</button>
+        <!-- All Charts in Single Vertical Column -->
+        <div class="charts-container">
+            <!-- PROVIDER-WISE SAVINGS TREND -->
+            <section class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Provider-wise Savings Trend</h2>
                 </div>
-            </div>
 
-            <div style="padding:1rem" class="card chart-container">
                 <div class="chart-wrapper">
                     <div class="loading-overlay" id="chartLoading">Loading…</div>
                     <canvas id="requestsChart"></canvas>
                 </div>
-                <div id="noDataMessage" style="display:none;padding:1rem;color:#666;text-align:center;">
+                <div
+                        id="noDataMessage"
+                        style="
+                display: none;
+                padding: 1rem;
+                color: #666;
+                text-align: center;
+              "
+                >
                     No analytics data available.
                 </div>
-            </div>
-        </section>
-
-        <!--CO2 trend section -->
-        <section class="card">
-            <div class="card-header">
-                <h2 class="card-title">Eco Impact (CO₂ Emission)</h2>
-
-                <div style="display:flex;gap:.5rem;align-items:center">
-                    <select id="co2Range">
-                        <option value="7">Last 7 days</option>
-                        <option value="30">Last 30 days</option>
-                    </select>
+                <div class="text-muted small">
+                    This chart shows the cumulative savings (in ₹) achieved with each
+                    ride-hailing provider over time. Each line represents a different
+                    provider, helping you see which one has consistently saved you the
+                    most money across all your requests.
                 </div>
-            </div>
+            </section>
 
-            <div class="chart-wrapper">
-                <canvas id="co2Chart"></canvas>
-            </div>
-        </section>
-
-        <!-- WALKING & HEALTH TREND -->
-        <section class="card">
-            <div class="card-header">
-                <h2 class="card-title">Walking & Health Contribution</h2>
-
-                <div style="display:flex;gap:.5rem;align-items:center">
-                    <select id="walkRange">
-                        <option value="day">Per Day</option>
-                        <option value="week" selected>Per Week</option>
-                        <option value="month">Per Month</option>
-                    </select>
+            <!-- CO2 trend section -->
+            <section class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Eco Impact (CO₂ Emission)</h2>
+                    <div style="display: flex; gap: 0.5rem; align-items: center">
+                        <select id="co2Range">
+                            <option value="7">Last 7 days</option>
+                            <option value="30">Last 30 days</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="chart-wrapper">
-                <canvas id="walkChart"></canvas>
-            </div>
+                <div class="chart-wrapper">
+                    <canvas id="co2Chart"></canvas>
+                </div>
+                <div class="text-muted small">
+                    Daily CO₂ emissions (in kg) from your rides over the selected
+                    period. Lower values indicate more eco-friendly choices. Choosing
+                    providers with walking suggestions or cheaper low-emission options
+                    helps reduce your carbon footprint significantly.
+                </div>
+            </section>
 
-            <div class="text-muted small" style="padding:.5rem 1rem">
-                Approx calories burned = 50 kcal per km
-            </div>
-        </section>
+            <!-- WALKING & HEALTH TREND - Bar Chart with Dual Axis -->
+            <section class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Walking & Health Contribution</h2>
+                    <div style="display: flex; gap: 0.5rem; align-items: center">
+                        <select id="walkRange">
+                            <option value="day">Per Day</option>
+                            <option value="week" selected>Last 7 Days</option>
+                            <option value="month">Last 30 Days</option>
+                        </select>
+                    </div>
+                </div>
 
-        <!-- SAVINGS vs CO2 TRADEOFF -->
-        <section class="card">
-            <div class="card-header">
-                <h2 class="card-title">Savings vs CO₂ Tradeoff</h2>
-                <span class="chip">Insight</span>
-            </div>
+                <div class="chart-wrapper">
+                    <canvas id="walkChart"></canvas>
+                </div>
 
-            <div class="chart-wrapper">
-                <canvas id="savingsCo2Chart"></canvas>
-            </div>
+                <div class="text-muted small">
+                    This chart shows your daily walking distance (blue bars, left axis
+                    in km) and estimated calories burned (orange bars, right axis in
+                    kcal). Approx 50 kcal burned per km walked. Keep walking – great
+                    for health and savings!
+                </div>
+            </section>
 
-            <div class="text-muted small" style="padding:.5rem 1rem">
-                Each dot represents one trip.
-            </div>
-        </section>
+            <!-- SAVINGS vs CO2 TRADEOFF -->
+            <section class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Savings vs CO₂ Tradeoff</h2>
+                </div>
 
+                <div class="chart-wrapper">
+                    <canvas id="savingsCo2Chart"></canvas>
+                </div>
 
-
+                <div class="text-muted small">
+                    Scatter plot showing the relationship between money saved (₹ on
+                    X-axis) and CO₂ emitted (kg on Y-axis) for each individual trip.
+                    Points lower and to the right represent the best outcomes: high
+                    savings with low environmental impact.
+                </div>
+            </section>
+        </div>
     </main>
 </div>
 
-
 <script>
     const API_BASE =
-      window.location.hostname === 'localhost'
-        ? ''
-        : 'https://ridevise-backend.onrender.com';
-        const totalRequests = document.getElementById('totalRequests');
-        const avgSavings = document.getElementById('avgSavings');
-        const mostUsed = document.getElementById('mostUsed');
+      window.location.hostname === "localhost"
+        ? ""
+        : "https://ridevise-backend.onrender.com";
 
-        const loadAnalytics = document.getElementById('loadAnalytics');
-        const userIdInput = document.getElementById('analyticsUserId');
+    const totalRequests = document.getElementById("totalRequests");
+    const avgSavings = document.getElementById("avgSavings");
+    const mostUsed = document.getElementById("mostUsed");
 
-        const chartCanvas = document.getElementById('requestsChart');
-        const chartLoading = document.getElementById('chartLoading');
-        const noDataMessage = document.getElementById('noDataMessage');
+    const loadAnalytics = document.getElementById("loadAnalytics");
+    const userIdInput = document.getElementById("analyticsUserId");
 
-        const co2Range = document.getElementById("co2Range");
-        const co2Canvas = document.getElementById("co2Chart");
-        const walkRange = document.getElementById("walkRange");
-        const walkCanvas = document.getElementById("walkChart");
-        const savingsCo2Canvas = document.getElementById("savingsCo2Chart");
+    const chartCanvas = document.getElementById("requestsChart");
+    const chartLoading = document.getElementById("chartLoading");
+    const noDataMessage = document.getElementById("noDataMessage");
 
-        let savingsCo2Chart = null;
-        let walkChart = null;
-        let co2Chart = null;
-        let providerChart = null;
+    const co2Range = document.getElementById("co2Range");
+    const co2Canvas = document.getElementById("co2Chart");
+    const walkRange = document.getElementById("walkRange");
+    const walkCanvas = document.getElementById("walkChart");
+    const savingsCo2Canvas = document.getElementById("savingsCo2Chart");
 
-        const COLORS = [
-          "#1f77b4", "#ff7f0e", "#2ca02c",
-          "#d62728", "#9467bd", "#8c564b",
-          "#e377c2", "#7f7f7f", "#17becf"
-        ];
+    let savingsCo2Chart = null;
+    let walkChart = null;
+    let co2Chart = null;
+    let providerChart = null;
 
-                                                           // SUMMARY DATA
-        async function loadSummary(userId) {
+    const COLORS = [
+      "#1f77b4",
+      "#ff7f0e",
+      "#2ca02c",
+      "#d62728",
+      "#9467bd",
+      "#8c564b",
+      "#e377c2",
+      "#7f7f7f",
+      "#17becf",
+    ];
+
+    // Common Options
+    const commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "top",
+          labels: {
+            usePointStyle: true,
+            pointStyle: "rectRounded",
+            padding: 15,
+            font: { size: 14, weight: 500 },
+          },
+        },
+        tooltip: {
+          backgroundColor: "rgba(255,255,255,0.9)",
+          borderColor: "#ddd",
+          borderWidth: 1,
+          bodyColor: "#333",
+          titleColor: "#333",
+          padding: 10,
+          cornerRadius: 8,
+          titleFont: { size: 14, weight: 500 },
+          bodyFont: { size: 13 },
+        },
+      },
+      scales: {
+        x: {
+          ticks: {
+            font: { size: 12, weight: 400 },
+            autoSkip: true,
+            maxTicksLimit: 12,
+            maxRotation: 45,
+          },
+          title: {
+            display: true,
+            text: "Date",
+            font: { size: 14, weight: 500 },
+          },
+          grid: { color: "#eef2f6" },
+        },
+        y: {
+          ticks: { font: { size: 12, weight: 400 } },
+          title: {
+            display: true,
+            font: { size: 14, weight: 500 },
+          },
+          grid: { color: "#eef2f6" },
+        },
+      },
+    };
+    function formatFullDate(dateStr) {
+      // input: "2026-01-02"
+      const d = new Date(dateStr);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}-${String(d.getDate()).padStart(2, "0")}`;
+    }
+
+    function formatMonth(dateStr) {
+      // input: "2026-01-15" → "2026-01"
+      const d = new Date(dateStr);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+    }
+
+    // SUMMARY DATA
+    async function loadSummary(userId) {
       try {
-        const res = await fetch(`${API_BASE}/api/v1/analytics/summary?userId=${userId}`);
-
-        if (!res.ok) {
-          const errText = await res.text().catch(() => "Unable to read error body");
-          console.error(`Summary API Error: HTTP ${res.status} - ${errText}`);
-          throw new Error(`Summary request failed: ${res.status}`);
-        }
-
+        const res = await fetch(
+          `${API_BASE}/api/v1/analytics/summary?userId=${userId}`
+        );
+        if (!res.ok) throw new Error("Failed");
         const data = await res.json();
 
-        totalRequests.textContent = data.totalRequests ?? '—';
+        totalRequests.textContent = data.totalRequests ?? "—";
         avgSavings.textContent = (data.averageSavings ?? 0).toFixed(2);
-        mostUsed.textContent = data.mostUsedProvider ?? '—';
-        document.getElementById("summaryCo2").textContent =
-      `🌱 ${data.co2SavedKg} kg`;
-
-    document.getElementById("summaryWalked").textContent =
-      `🚶 ${data.walkedKm} km`;
-
-    document.getElementById("summaryCalories").textContent =
-      `🔥 ~${data.caloriesBurned} kcal`;
-
-
+        mostUsed.textContent = data.mostUsedProvider ?? "—";
+        document.getElementById("summaryCo2").textContent = `🌱 ${
+          data.co2SavedKg ?? 0
+        } kg`;
+        document.getElementById("summaryWalked").textContent = `🚶 ${
+          data.walkedKm ?? 0
+        } km`;
+        document.getElementById("summaryCalories").textContent = `🔥 ~${
+          data.caloriesBurned ?? 0
+        } kcal`;
       } catch (e) {
-        console.error("Summary fetch error:", e);
+        totalRequests.textContent =
+          avgSavings.textContent =
+          mostUsed.textContent =
+            "—";
+        document.getElementById("summaryCo2").textContent = "—";
+        document.getElementById("summaryWalked").textContent = "—";
+        document.getElementById("summaryCalories").textContent = "—";
       }
     }
-                                                            // CO2 GRAPH FOR 7/30 DAYS
-          async function loadCo2Trend(userId) {
-          const days = co2Range.value;
 
-          const res = await fetch(
-            `${API_BASE}/api/v1/analytics/co2-trend?userId=${userId}&days=${days}`
-          );
+    // CO2 Trend
+    async function loadCo2Trend(userId) {
+      const days = co2Range.value;
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/v1/analytics/co2-trend?userId=${userId}&days=${days}`
+        );
+        if (!res.ok) throw new Error("Failed");
+        const data = await res.json();
+        if (!data.labels?.length) return;
 
-          if (!res.ok) return;
-
-          const data = await res.json();
-          if (!data.labels?.length) return;
-
-          if (co2Chart) co2Chart.destroy();
-
-          co2Chart = new Chart(co2Canvas.getContext("2d"), {
-            type: "line",
-            data: {
-              labels: data.labels,
-              datasets: [{
+        if (co2Chart) co2Chart.destroy();
+        co2Chart = new Chart(co2Canvas.getContext("2d"), {
+          type: "line",
+          data: {
+            labels: data.labels,
+            datasets: [
+              {
                 label: "CO₂ Emission (kg)",
                 data: data.data,
                 borderColor: "#2ca02c",
-                tension: 0.3
-              }]
-            }
-          });
-        }
-        co2Range.addEventListener("change", () => {
-            const userId = userIdInput.value.trim() || "123";
-            loadCo2Trend(userId);
+                backgroundColor: "rgba(44,160,44,0.1)",
+                fill: true,
+                borderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 8,
+              },
+            ],
+          },
+          options: {
+            ...commonOptions,
+            scales: {
+              ...commonOptions.scales,
+              y: {
+                ...commonOptions.scales.y,
+                title: { ...commonOptions.scales.y.title, text: "CO₂ (kg)" },
+              },
+            },
+          },
         });
+      } catch (e) {}
+    }
+    function weekToDateRange(weekStr) {
+// ❌ agar ISO week format hi nahi hai, toh seedha return
+if (!/^\d{4}-W\d{1,2}$/.test(weekStr)) {
+  return weekStr;
+}
 
-                                                 // WALKING AND BURNING CALORIES
+const [yearStr, weekStrNum] = weekStr.split("-W");
+const year = Number(yearStr);
+const week = Number(weekStrNum);
 
-        async function loadWalkingTrend(userId) {
+if (Number.isNaN(year) || Number.isNaN(week)) {
+  return weekStr;
+}
+
+// ISO week logic
+const jan4 = new Date(year, 0, 4);
+const jan4Day = jan4.getDay() || 7;
+const weekStart = new Date(jan4);
+weekStart.setDate(jan4.getDate() - (jan4Day - 1) + (week - 1) * 7);
+
+const weekEnd = new Date(weekStart);
+weekEnd.setDate(weekStart.getDate() + 6);
+
+const fmt = (d) =>
+  `${String(d.getDate()).padStart(2, "0")}-${String(
+    d.getMonth() + 1
+  ).padStart(2, "0")}-${d.getFullYear()}`;
+
+return `${fmt(weekStart)} → ${fmt(weekEnd)}`;
+}
+
+    async function loadWalkingTrend(userId) {
       const range = walkRange.value;
 
       try {
         const res = await fetch(
           `${API_BASE}/api/v1/analytics/walking-trend?userId=${userId}&range=${range}`
         );
-
-        if (!res.ok) return;
+        if (!res.ok) throw new Error("Failed");
 
         const data = await res.json();
         if (!data.labels?.length) return;
+        const isDayView = range === "day";
+        const chartType = isDayView ? "line" : "bar";
+        // 🔑 TRUST BACKEND COMPLETELY
+        let labels = data.labels;
+let distance = data.distance;
+let calories = data.calories;
+
+// 🟢 WEEK → ISO week to date range
+if (range === "week") {
+labels = labels.map(l => weekToDateRange(l));
+}
+
+// 🟢 MONTH → YYYY-MM
+if (range === "month") {
+labels = labels.map(l => formatMonth(l));
+}
 
         if (walkChart) walkChart.destroy();
+        console.log("WALK FINAL", labels, distance, calories);
+
+        // 🔥 overlap fix ke liye scaling
+        const maxDistance = Math.max(...distance, 0);
+        const maxCalories = Math.max(...calories, 0);
+
+        // distance ko normal padding
+        const suggestedMaxDistance =
+          maxDistance === 0 ? 10 : Math.ceil(maxDistance * 1.2);
+
+        // calories ko intentionally zyada scale
+        const suggestedMaxCalories =
+          maxCalories === 0 ? 500 : Math.ceil(maxCalories * 2.5);
 
         walkChart = new Chart(walkCanvas.getContext("2d"), {
-          type: "bar",
+          type: chartType,
           data: {
-            labels: data.labels,
+            labels,
             datasets: [
               {
-                label: "Walked Distance (km)",
-                data: data.distance,
-                backgroundColor: "#1f77b4"
+                label: "Distance Walked (km)",
+                data: distance,
+                borderColor: "#1f77b4",
+                backgroundColor: isDayView
+                  ? "rgba(31,119,180,0.15)"
+                  : "rgba(31,119,180,0.8)",
+                fill: isDayView,
+                borderWidth: 1,
+                tension: 0,
+                pointRadius: isDayView ? 4 : 0,
+                pointHoverRadius: isDayView ? 8 : 0,
+                yAxisID: "y",
               },
               {
                 label: "Calories Burned (kcal)",
-                data: data.calories,
-                backgroundColor: "#ff7f0e"
-              }
-            ]
+                data: calories,
+                borderColor: "#ff7f0e",
+                backgroundColor: isDayView
+                  ? "rgba(255,127,14,0.15)"
+                  : "rgba(255,127,14,0.8)",
+                fill: isDayView,
+                borderWidth: 1,
+                tension: 0,
+                pointRadius: isDayView ? 4 : 0,
+                pointHoverRadius: isDayView ? 8 : 0,
+                yAxisID: "y1",
+              },
+            ],
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: commonOptions.plugins,
             scales: {
+              x: {
+                type: "category",
+                ticks: {
+                  autoSkip: false,
+                  maxRotation: 0,
+                  minRotation: 0,
+                  font: { size: 12 },
+                },
+                title: {
+                  display: true,
+                  text: range === "month" ? "Month" : "Date",
+                  font: { size: 14, weight: 500 },
+                },
+              },
               y: {
                 beginAtZero: true,
+                suggestedMax: suggestedMaxDistance, // ✅
                 title: {
                   display: true,
-                  text: "Distance (km) / Calories"
-                }
+                  text: "Distance (km)",
+                  color: "#1f77b4",
+                  font: { size: 14, weight: 500 },
+                },
               },
-              x: {
+
+              y1: {
+                position: "right",
+                beginAtZero: true,
+                suggestedMax: suggestedMaxCalories, // ✅
                 title: {
                   display: true,
-                  text: range.charAt(0).toUpperCase() + range.slice(1)
-                }
-              }
-            }
-          }
+                  text: "Calories (kcal)",
+                  color: "#ff7f0e",
+                  font: { size: 14, weight: 500 },
+                },
+                grid: { drawOnChartArea: false },
+              },
+            },
+          },
         });
-
       } catch (e) {
         console.error("Walking trend error:", e);
       }
     }
-        walkRange.addEventListener("change", () => {
-            const userId = userIdInput.value.trim() || "123";
-            loadWalkingTrend(userId);
-        });
 
-                                                        // SAVINGS VS CO2
-        async function loadSavingsVsCo2(userId) {
+    // SAVINGS vs CO2 TRADEOFF
+    async function loadSavingsVsCo2(userId) {
       try {
         const res = await fetch(
           `${API_BASE}/api/v1/analytics/savings-vs-co2?userId=${userId}`
         );
-
         if (!res.ok) return;
-
         const data = await res.json();
         if (!data.points?.length) return;
-
         if (savingsCo2Chart) savingsCo2Chart.destroy();
-
         savingsCo2Chart = new Chart(savingsCo2Canvas.getContext("2d"), {
           type: "scatter",
           data: {
-            datasets: [{
-              label: "Trips",
-              data: data.points,
-              backgroundColor: "#9467bd",
-              pointRadius: 5
-            }]
+            datasets: [
+              {
+                label: "Trips",
+                data: data.points,
+                backgroundColor: "#9467bd",
+                pointRadius: 6,
+              },
+            ],
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              tooltip: {
-                callbacks: {
-                  label: (ctx) =>
-                    `Savings: ₹${ctx.parsed.x}, CO₂: ${ctx.parsed.y} kg`
-                }
-              }
-            },
+            ...commonOptions,
             scales: {
               x: {
+                ...commonOptions.scales.x,
                 title: {
-                  display: true,
-                  text: "Savings (₹)"
+                  ...commonOptions.scales.x.title,
+                  text: "Savings (₹)",
                 },
-                beginAtZero: true
               },
               y: {
+                ...commonOptions.scales.y,
                 title: {
-                  display: true,
-                  text: "CO₂ Emission (kg)"
+                  ...commonOptions.scales.y.title,
+                  text: "CO₂ Emission (kg)",
                 },
-                beginAtZero: true
-              }
-            }
-          }
+              },
+            },
+          },
         });
-
       } catch (e) {
         console.error("Savings vs CO2 error:", e);
       }
     }
 
-
-                                                        // PROVIDER-WISE SAVINGS TREND
+    // Provider-wise Savings Trend
     async function loadProviderSavings(userId) {
       chartLoading.style.display = "flex";
       noDataMessage.style.display = "none";
+      if (providerChart) providerChart.destroy();
 
       try {
-        const res = await fetch(`${API_BASE}/api/v1/analytics/provider-savings-trend?userId=${userId}`);
-
-        // 🔥 HTTP STATUS CHECK (CodeRabbit requirement)
-        if (!res.ok) {
-          console.error(`ProviderSavings API Error: HTTP ${res.status} - ${res.statusText}`);
-
-          destroyChart();
-          noDataMessage.style.display = "block";
-
-          return; // ❗ Prevent parsing non-JSON error body
-        }
-
-        // ✔ Only parse JSON when response.ok = true
+        const res = await fetch(
+          `${API_BASE}/api/v1/analytics/provider-savings-trend?userId=${userId}`
+        );
+        if (!res.ok) throw new Error("Failed");
         const data = await res.json();
 
+        // Agar originally hi data nahi
         if (!data.labels?.length || !data.datasets?.length) {
-          destroyChart();
           noDataMessage.style.display = "block";
           return;
         }
 
+        // Last non-zero value ka index find karo
+        let lastValidIndex = 0;
+        let hasAnyNonZero = false;
+
+        data.datasets.forEach((ds) => {
+          ds.data.forEach((value, index) => {
+            if (value !== null && value !== undefined && value > 0) {
+              hasAnyNonZero = true;
+              lastValidIndex = Math.max(lastValidIndex, index);
+            }
+          });
+        });
+
+        let finalLength;
+
+        if (hasAnyNonZero) {
+          // Agar saving hai → last non-zero ke baad +2 extra points dikhao
+          finalLength = lastValidIndex + 1 + 2; // +1 for including last, +2 extra
+        } else {
+          // Agar sab zero → poora data dikhao (flat zero line)
+          finalLength = data.labels.length;
+        }
+
+        // Safety: agar +2 karne se total labels se zyada ho gaya
+        finalLength = Math.min(finalLength, data.labels.length);
+
+        // Agar kuch bhi nahi bacha
+        if (finalLength === 0) {
+          noDataMessage.style.display = "block";
+          return;
+        }
+
+        // Trim labels
+        const trimmedLabels = data.labels.slice(0, finalLength);
+        const cleanLabels = trimmedLabels.map((label) =>
+          label.replace("#", "")
+        );
+
+        // Trim datasets
         const chartData = data.datasets.map((ds, i) => {
           const color = COLORS[i % COLORS.length];
           return {
             label: ds.label,
-            data: ds.data,
-            tension: 0.3,
-            borderWidth: 2,
-            fill: false,
+            data: ds.data.slice(0, finalLength),
             borderColor: color,
-            backgroundColor: color,
-            pointRadius: 4,
-            pointHoverRadius: 6
+            backgroundColor: `${color}33`,
+            fill: true,
+            tension: 0.4,
+            borderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 8,
           };
         });
 
-        renderProviderChart(data.labels, chartData);
+        // Debug (production mein hata sakta hai)
+        console.log("Has savings > 0:", hasAnyNonZero);
+        console.log("Last non-zero index:", lastValidIndex);
+        console.log(
+          "Final graph length (with +2 if applicable):",
+          finalLength
+        );
 
+        // Chart banayo
+        providerChart = new Chart(chartCanvas.getContext("2d"), {
+          type: "line",
+          data: { labels: cleanLabels, datasets: chartData },
+          options: {
+            ...commonOptions,
+            interaction: { mode: "nearest", intersect: false },
+            scales: {
+              ...commonOptions.scales,
+              x: {
+                ...commonOptions.scales.x,
+                title: {
+                  ...commonOptions.scales.x.title,
+                  text: "Request Number",
+                },
+              },
+              y: {
+                ...commonOptions.scales.y,
+                title: {
+                  ...commonOptions.scales.y.title,
+                  text: "Cumulative Savings (₹)",
+                },
+              },
+            },
+          },
+        });
       } catch (e) {
-        console.error("ProviderSavings fetch error:", e);
-        destroyChart();
+        console.error("Error loading provider savings:", e);
         noDataMessage.style.display = "block";
       } finally {
         chartLoading.style.display = "none";
       }
     }
 
+    // Main Load Button Click
+    loadAnalytics.addEventListener("click", async () => {
+      const userId = userIdInput.value.trim();
+      if (!userId) {
+        alert("Please enter a User ID");
+        return;
+      }
 
-        function renderProviderChart(labels, datasets) {
-          if (providerChart) providerChart.destroy();
+      chartLoading.style.display = "flex";
+      await loadSummary(userId);
+      await loadProviderSavings(userId);
+      await loadCo2Trend(userId);
+      await loadWalkingTrend(userId);
+      await loadSavingsVsCo2(userId);
+      chartLoading.style.display = "none";
+    });
 
-          providerChart = new Chart(chartCanvas.getContext("2d"), {
-            type: "line",
-            data: { labels, datasets },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              interaction: { mode: "nearest", intersect: false },
-              plugins: {
-                legend: {
-                  position: "top",
-                  labels: { usePointStyle: true }
-                },
-                tooltip: {
-                  callbacks: {
-                    label: (ctx) => `${ctx.dataset.label}: ₹${ctx.formattedValue}`
-                  }
-                }
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  title: { display: true, text: "Savings (₹)" }
-                },
-                x: {
-                  title: { display: true, text: "Request Number" }
-                }
-              }
-            }
-          });
-        }
+    // Allow Enter key in input
+    userIdInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") loadAnalytics.click();
+    });
 
-        function destroyChart() {
-          if (providerChart) {
-            providerChart.destroy();
-            providerChart = null;
-          }
-        }
+    // Event listeners for range changes
+    co2Range.addEventListener("change", () => {
+      const userId = userIdInput.value.trim();
+      if (userId) loadCo2Trend(userId);
+    });
 
-        loadAnalytics.addEventListener("click", async () => {
-          const userId = userIdInput.value.trim() || "123";
-          chartLoading.style.display = "flex";
-          await loadSummary(userId);
-          await loadProviderSavings(userId);
-          await loadCo2Trend(userId);
-          await loadWalkingTrend(userId);
-          await loadSavingsVsCo2(userId);
-          chartLoading.style.display = "none";
-        });
-
-        window.onload = () => loadAnalytics.click();
-
+    walkRange.addEventListener("change", () => {
+      const userId = userIdInput.value.trim();
+      if (userId) loadWalkingTrend(userId);
+    });
 </script>
-
 </body>
 </html>
-
-
-
-
-
-

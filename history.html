@@ -1,116 +1,433 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>History — FareComparator</title>
-  <link rel="stylesheet" href="history.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>History — FareComparator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Geom:ital,wght@0,300..900;1,300..900&family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&family=Oregano:ital@0;1&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Unbounded:wght@200..900&display=swap');
+
+        :root {
+          --primary: #3B82F6;
+          --primary-dark: #2b5de7;
+          --text: #1e293b;
+          --text-muted: #64748b;
+          --bg: #f8fafc;
+          --card: #ffffff;
+          --border: #e2e8f0;
+          --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+          --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+          --radius: 12px;
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          background: var(--bg);
+          color: var(--text);
+          line-height: 1.6;
+          min-height: 100vh;
+        }
+
+        .app-shell {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+        }
+
+        .app-nav {
+          background: #0f1225;
+          color: #fff;
+          padding: 0.75rem 1.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 76px;
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+        }
+
+        .app-brand {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-weight: bold;
+        }
+
+        .app-logo {
+          height: 32px;
+          width: auto;
+          display: block;
+          padding-left: 140px;
+        }
+
+        .app-nav-links {
+          padding-right: 140px;
+          font-size: 16px;
+          display: flex;
+          gap: 1.5rem;
+        }
+
+        .app-nav-links a {
+          color: rgba(255, 255, 255, 0.823);
+          text-decoration: none;
+          position: relative;
+          padding: 0.5rem 0;
+          transition: all 0.3s ease;
+        }
+
+        .app-nav-links a:hover {
+          color: rgba(255, 255, 255, 1);
+        }
+
+        .app-nav-links a::after {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 2px;
+          bottom: 0;
+          left: 0;
+          background: #a992df;
+          transition: width 0.3s ease;
+          border-radius: 1px;
+        }
+
+        .app-nav-links a:hover::after {
+          width: 100%;
+        }
+
+        .app-nav-links a.active {
+          color: #a992df;
+          font-weight: 500;
+        }
+
+        .app-nav-links a.active::after {
+          width: 100%;
+          background: #a992df;
+        }
+
+        .app-main {
+          flex: 1;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 2.5rem 1.5rem;
+        }
+
+        .card {
+          background: var(--card);
+          border-radius: var(--radius);
+          box-shadow: var(--shadow-md);
+          overflow: hidden;
+          border: 1px solid var(--border);
+        }
+
+        .card-header {
+          padding: 1.5rem 2rem;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: var(--text);
+        }
+
+        .history-controls {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          align-items: center;
+          padding: 1.5rem 2rem 1rem;
+        }
+
+        .history-controls label {
+          font-weight: 500;
+          color: var(--text-muted);
+          font-size: 0.95rem;
+        }
+
+        input[type="text"] {
+          flex: 1;
+          min-width: 180px;
+          padding: 0.75rem 1rem;
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          font-size: 1rem;
+          transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus {
+          outline: none;
+          border-color: var(--primary);
+          box-shadow: 0 0 0 3px rgba(169, 146, 223, 0.15);
+        }
+
+        .btn {
+          padding: 0.75rem 1.5rem;
+          font-weight: 600;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          border: none;
+        }
+
+        .btn-primary {
+          background: var(--primary);
+          color: white;
+        }
+
+        .btn-primary:hover {
+          background: var(--primary-dark);
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(139, 92, 246, 0.25);
+        }
+
+        .history-list {
+          padding: 0 2rem 2rem;
+        }
+
+        .history-item {
+          border: 1px solid var(--border);
+          border-radius: var(--radius);
+          padding: 1.5rem;
+          margin-bottom: 1.25rem;
+          background: white;
+          transition: all 0.25s ease;
+        }
+
+        .history-item:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 15px rgba(0,0,0,0.06);
+        }
+
+        .history-item .top-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 1.5rem;
+          flex-wrap: wrap;
+        }
+
+        .route {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: var(--text);
+        }
+
+        .date {
+          color: var(--text-muted);
+          font-size: 0.95rem;
+          margin-top: 0.35rem;
+        }
+
+        .stats {
+          margin-top: 0.8rem;
+          font-size: 0.95rem;
+        }
+
+        .savings {
+          font-size: 1.6rem;
+          font-weight: 800;
+          color: #10b981;
+          text-align: right;
+        }
+
+        .empty-state {
+          text-align: center;
+          padding: 5rem 1rem;
+          color: var(--text-muted);
+          font-size: 1.1rem;
+        }
+
+        @media (max-width: 640px) {
+          .history-controls {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          .top-row {
+            flex-direction: column;
+          }
+          .savings {
+            text-align: left;
+            margin-top: 1rem;
+          }
+          .app-logo {
+            padding-left: 20px;
+          }
+          .app-nav-links {
+            padding-right: 20px;
+            gap: 1rem;
+            font-size: 14px;
+          }
+        }
+    </style>
 </head>
 <body>
-  <div class="app-shell">
+<div class="app-shell">
     <header class="app-nav">
-      <div class="app-brand"><span>FareComparator</span><span class="badge"></span></div>
-      <nav class="app-nav-links">
-        <a href="index.html">Compare</a>
-        <a href="history.html" class="active">History</a>
-        <a href="analytics.html">Analytics</a>
-      </nav>
+        <div class="app-brand">
+            <img src="logo.svg" alt="FareComparator Logo" class="app-logo" />
+        </div>
+        <nav class="app-nav-links">
+            <a href="index.html">Compare</a>
+            <a href="history.html" class="active">History</a>
+            <a href="analytics.html">Analytics</a>
+            <a href="contact.html">Contact Us</a>
+        </nav>
     </header>
 
     <main class="app-main">
-      <section class="card">
-        <div class="card-header">
-          <div>
-            <h1 class="card-title">Search History</h1>
-            <p class="text-muted">Past compare requests for a user</p>
-          </div>
-          <span class="chip">History API</span>
-        </div>
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">Search History</h1>
+            </div>
 
-        <div class="history-controls" style="display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem;">
-          <label style="font-size:.9rem;color:#6b7280">User ID</label>
-          <input id="historyUserId" placeholder="1234" />
-          <button id="loadHistoryBtn" class="btn btn-primary btn-sm">Load</button>
-        </div>
+            <div class="history-controls">
+                <label>User ID</label>
+                <input id="historyUserId" placeholder="1234" type="text" />
+                <button id="loadHistoryBtn" class="btn btn-primary">Load History</button>
+            </div>
 
-        <div id="historyList" class="history-list">
-          <div class="text-muted" style="padding:1rem">No history loaded. Click Load.</div>
+            <div id="historyList" class="history-list">
+                <div class="empty-state">No history loaded yet.<br>Enter User ID and click Load.</div>
+            </div>
         </div>
-      </section>
     </main>
-  </div>
+</div>
 
 <script>
-    const API_BASE =
-    window.location.hostname === 'localhost'
-      ? ''
-      : 'https://ridevise-backend.onrender.com';
-    const loadHistoryBtn = document.getElementById('loadHistoryBtn');
+    const API_BASE = window.location.hostname === 'localhost' ? '' : 'https://ridevise-backend.onrender.com';
+
+    const loadBtn = document.getElementById('loadHistoryBtn');
     const historyList = document.getElementById('historyList');
-    const historyUserId = document.getElementById('historyUserId');
+    const userIdInput = document.getElementById('historyUserId');
 
-    function fmtDate(ts){ try { return new Date(ts).toLocaleString(); } catch(e){return ts} }
+    function fmtDate(ts) {
+      try {
+        return new Date(ts).toLocaleString('en-IN', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true
+        });
+      } catch(e) {
+        return ts || '—';
+      }
+    }
 
-    function renderHistory(items){
+    function escapeHtml(s) {
+      return String(s || '').replace(/[&<>"']/g, m => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[m]);
+    }
+
+    // Yeh function exactly tera requirement pura karta hai
+    function formatChosenProvider(rawChosen) {
+      let chosen = String(rawChosen || '').trim();
+      if (!chosen || chosen === '—') return 'Chosen: —';
+
+      // Agar already "Provider -" format mein hai toh waise hi return kar do (future proof)
+      if (chosen.startsWith('Provider -')) return chosen;
+
+      // Split by ':' — jaise "Rapido:Premium_cab" → ["Rapido", "Premium_cab"]
+      const parts = chosen.split(':');
+      let provider = parts[0].trim();
+      let service = parts.length > 1 ? parts[1].trim() : '';
+
+      // Service ko clean karo: underscore ko space, capitalize karo
+      if (service) {
+        service = service
+                .replace(/_/g, ' ')                    // _ ko space
+                .replace(/\b\w/g, c => c.toUpperCase()); // Har word ka first letter capital
+      }
+
+      // Agar service hai toh ( Service ) banao, warna sirf provider
+      const servicePart = service ? ` (${service})` : '';
+
+      return `Provider - ${provider}${servicePart}`;
+    }
+
+    function renderHistory(items) {
       historyList.innerHTML = '';
-      if(!items || items.length===0){
-        historyList.innerHTML = '<div class="text-muted" style="padding:1rem">No history found.</div>';
+
+      if (!items || items.length === 0) {
+        historyList.innerHTML = '<div class="empty-state">No history found for this user.</div>';
         return;
       }
-      items.forEach(h=>{
+
+      items.forEach(item => {
         const div = document.createElement('div');
-        div.className='history-item card';
+        div.className = 'history-item';
+
+        const origin = escapeHtml(item.tripRequest?.origin || item.origin || '—');
+        const dest = escapeHtml(item.tripRequest?.destination || item.destination || '—');
+        const rawChosen = item.chosenProviderId || item.chosenProvider || '—';
+        const saved = Number(item.savings || 0).toFixed(2);
+        const co2 = Number(item.co2EmissionKg || 0).toFixed(2);
+        const co2Emoji = co2 > 50 ? '🌡️' : '🌱';
+        const walked = item.walkedDistanceKm != null ? Number(item.walkedDistanceKm).toFixed(2) : null;
+
+        // Ab yahan clean text aayega
+        const chosenText = formatChosenProvider(rawChosen);
+
         div.innerHTML = `
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div style="font-weight:600">${escapeHtml(h.tripRequest?.origin || h.origin || '-') } → ${escapeHtml(h.tripRequest?.destination || h.destination || '-')}</div>
-              <div class="text-muted small">${fmtDate(h.createdAt || h.timestamp || h.date)}</div>
-              <div class="text-muted small">
-                CO₂ Emission: ${Number(h.co2EmissionKg || 0).toFixed(2)} kg
-              </div>
-
-              ${h.walkedDistanceKm != null ? `
-                <div class="text-muted small">
-                  Walked Distance: ${Number(h.walkedDistanceKm).toFixed(2)} km
+            <div class="top-row">
+              <div>
+                <div class="route">${origin} → ${dest}</div>
+                <div class="date">${fmtDate(item.createdAt || item.timestamp || item.date)}</div>
+                <div class="stats">
+                  CO₂ Emission: ${co2Emoji} <strong>${co2} kg</strong>
+                  ${walked !== null ? `<br>Walked: <strong>${walked} km</strong>` : ''}
                 </div>
-              ` : ``}
+              </div>
+              <div>
+                <div class="savings">Saved ₹${saved}</div>
+                <div style="color:var(--text-muted);font-size:0.95rem;text-align:right;margin-top:0.4rem;">
+                  ${chosenText}
+                </div>
+              </div>
+            </div>
+          `;
 
-            </div>
-            <div style="text-align:right">
-              <div style="font-weight:700">Saved ₹ ${Number(h.savings || 0).toFixed(2)}</div>
-              <div class="text-muted small">Chosen: ${escapeHtml(h.chosenProviderId || h.chosenProvider || '-')}</div>
-            </div>
-          </div>
-          <div style="margin-top:.6rem">
-            <div class="text-muted small">Providers:</div>
-            <div style="display:flex;gap:.4rem;margin-top:.4rem;overflow:auto">
-              ${( (h.fareEstimate || []).map(p=>`<div class="chip">${escapeHtml(p.providerName||p.providerId)} ₹${Number(p.price||0).toFixed(0)}</div>`).join('') ) }
-            </div>
-          </div>
-        `;
         historyList.appendChild(div);
       });
     }
 
-    function escapeHtml(s) { return String(s||'').replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    async function loadHistory() {
+      const userId = (userIdInput.value || '1234').trim();
+      historyList.innerHTML = '<div class="empty-state">Loading history...</div>';
 
-    async function loadHistory(){
-      const userId = historyUserId.value || '1234';
-      historyList.innerHTML = '<div class="text-muted" style="padding:1rem">Loading history...</div>';
       try {
         const res = await fetch(API_BASE + '/api/v1/history/' + encodeURIComponent(userId));
-        if(!res.ok) throw new Error('HTTP ' + res.status);
+        if (!res.ok) throw new Error('Failed: ' + res.status);
         const data = await res.json();
-        // expected array of items
-        renderHistory(Array.isArray(data) ? data : (data.items || []));
-      } catch(err) {
+        const items = Array.isArray(data) ? data : (data.items || []);
+        renderHistory(items);
+      } catch (err) {
         console.error(err);
-        historyList.innerHTML = '<div class="text-muted" style="padding:1rem">Failed to load history.</div>';
+        historyList.innerHTML = '<div class="empty-state" style="color:#dc2626">Failed to load history. Please try again.</div>';
       }
     }
 
-    loadHistoryBtn.addEventListener('click', loadHistory);
+    loadBtn.addEventListener('click', loadHistory);
+
+    userIdInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        loadHistory();
+      }
+    });
 </script>
 </body>
 </html>
-
-

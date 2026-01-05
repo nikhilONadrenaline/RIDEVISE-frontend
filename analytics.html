@@ -271,7 +271,17 @@
       .app-nav-links a.active::after {
         width: 100%;
         background: #a992df;
-      
+      }
+
+      @media (max-width: 768px) {
+        .app-nav-container {
+          padding: 0 1rem;
+        }
+
+        .app-nav-links {
+          gap: 1rem;
+          font-size: 14px;
+        }
       } /* Professional & Compact Select Dropdown */
       select {
         padding: 0.6rem 2.2rem 0.6rem 0.9rem; /* Thoda kam padding */
@@ -464,8 +474,8 @@
               <div style="display: flex; gap: 0.5rem; align-items: center">
                 <select id="walkRange">
                   <option value="day">Per Day</option>
-                  <option value="week" selected>Per Week</option>
-                  <option value="month">Per Month</option>
+                  <option value="week" selected>Last 7 Days</option>
+                  <option value="month">Last 30 Days</option>
                 </select>
               </div>
             </div>
@@ -687,35 +697,35 @@
         } catch (e) {}
       }
       function weekToDateRange(weekStr) {
-        // ❌ agar ISO week format hi nahi hai, toh seedha return
-        if (!/^\d{4}-W\d{1,2}$/.test(weekStr)) {
-          return weekStr;
-        }
+  // ❌ agar ISO week format hi nahi hai, toh seedha return
+  if (!/^\d{4}-W\d{1,2}$/.test(weekStr)) {
+    return weekStr;
+  }
 
-        const [yearStr, weekStrNum] = weekStr.split("-W");
-        const year = Number(yearStr);
-        const week = Number(weekStrNum);
+  const [yearStr, weekStrNum] = weekStr.split("-W");
+  const year = Number(yearStr);
+  const week = Number(weekStrNum);
 
-        if (Number.isNaN(year) || Number.isNaN(week)) {
-          return weekStr;
-        }
+  if (Number.isNaN(year) || Number.isNaN(week)) {
+    return weekStr;
+  }
 
-        // ISO week logic
-        const jan4 = new Date(year, 0, 4);
-        const jan4Day = jan4.getDay() || 7;
-        const weekStart = new Date(jan4);
-        weekStart.setDate(jan4.getDate() - (jan4Day - 1) + (week - 1) * 7);
+  // ISO week logic
+  const jan4 = new Date(year, 0, 4);
+  const jan4Day = jan4.getDay() || 7;
+  const weekStart = new Date(jan4);
+  weekStart.setDate(jan4.getDate() - (jan4Day - 1) + (week - 1) * 7);
 
-        const weekEnd = new Date(weekStart);
-        weekEnd.setDate(weekStart.getDate() + 6);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6);
 
-        const fmt = (d) =>
-          `${String(d.getDate()).padStart(2, "0")}-${String(
-            d.getMonth() + 1
-          ).padStart(2, "0")}-${d.getFullYear()}`;
+  const fmt = (d) =>
+    `${String(d.getDate()).padStart(2, "0")}-${String(
+      d.getMonth() + 1
+    ).padStart(2, "0")}-${d.getFullYear()}`;
 
-        return `${fmt(weekStart)} → ${fmt(weekEnd)}`;
-      }
+  return `${fmt(weekStart)} → ${fmt(weekEnd)}`;
+}
 
       async function loadWalkingTrend(userId) {
         const range = walkRange.value;
@@ -732,18 +742,18 @@
           const chartType = isDayView ? "line" : "bar";
           // 🔑 TRUST BACKEND COMPLETELY
           let labels = data.labels;
-          let distance = data.distance;
-          let calories = data.calories;
+let distance = data.distance;
+let calories = data.calories;
 
-          // 🟢 WEEK → ISO week to date range
-          if (range === "week") {
-            labels = labels.map((l) => weekToDateRange(l));
-          }
+// 🟢 WEEK → ISO week to date range
+if (range === "week") {
+  labels = labels.map(l => weekToDateRange(l));
+}
 
-          // 🟢 MONTH → YYYY-MM
-          if (range === "month") {
-            labels = labels.map((l) => formatMonth(l));
-          }
+// 🟢 MONTH → YYYY-MM
+if (range === "month") {
+  labels = labels.map(l => formatMonth(l));
+}
 
           if (walkChart) walkChart.destroy();
           console.log("WALK FINAL", labels, distance, calories);
@@ -952,15 +962,8 @@
           // Trim datasets
           const chartData = data.datasets.map((ds, i) => {
             const color = COLORS[i % COLORS.length];
-
-            // ✅ (Mock) ko hata do label se
-            let cleanLabel = ds.label;
-            if (cleanLabel.includes("(Mock)")) {
-              cleanLabel = cleanLabel.replace("(Mock)", "").trim();
-            }
-
             return {
-              label: cleanLabel, // ← yahi change
+              label: ds.label,
               data: ds.data.slice(0, finalLength),
               borderColor: color,
               backgroundColor: `${color}33`,
@@ -971,6 +974,7 @@
               pointHoverRadius: 8,
             };
           });
+
           // Debug (production mein hata sakta hai)
           console.log("Has savings > 0:", hasAnyNonZero);
           console.log("Last non-zero index:", lastValidIndex);
@@ -1048,4 +1052,3 @@
     </script>
   </body>
 </html>
-

@@ -774,7 +774,7 @@
             <img src="logo.svg" alt="FareComparator Logo" class="app-logo" />
         </div>
         <nav class="app-nav-links">
-            <a href="index.html" class="active">Compare</a>
+            <a href="compare.html" class="active">Compare</a>
             <a href="history.html">History</a>
             <a href="analytics.html">Analytics</a>
             <a href="contact.html">Contact Us</a>
@@ -974,31 +974,38 @@
                     <div class="demo-buttons">
                         <button
                                 class="btn btn-secondary demo-btn"
+                                data-origin="MNNIT"
+                                data-destination="Sangam Ghat"
+                        >
+                            MNNIT → Sangam Ghat
+                        </button>
+                        <button
+                                class="btn btn-secondary demo-btn"
+                                data-origin="MNNIT"
+                                data-destination="Allahabad university"
+                        >
+                            MNNIT → Allahabad university
+                        </button>
+                        <button
+                                class="btn btn-secondary demo-btn"
+                                data-origin="Civil lines"
+                                data-destination="MNNIT"
+                        >
+                            Civil lines → MNNIT
+                        </button>
+                        <button
+                                class="btn btn-secondary demo-btn"
+                                data-origin="Prayagraj Junction"
+                                data-destination="MNNIT"
+                        >
+                            Prayagraj Junction → MNNIT
+                        </button>
+                        <button
+                                class="btn btn-secondary demo-btn"
                                 data-origin="New Delhi"
                                 data-destination="Rajiv Chowk"
                         >
                             New Delhi → Rajiv Chowk
-                        </button>
-                        <button
-                                class="btn btn-secondary demo-btn"
-                                data-origin="New Delhi"
-                                data-destination="Karol Bagh"
-                        >
-                            New Delhi → Karol Bagh
-                        </button>
-                        <button
-                                class="btn btn-secondary demo-btn"
-                                data-origin="Mumbai"
-                                data-destination="Thane"
-                        >
-                            Mumbai → Thane
-                        </button>
-                        <button
-                                class="btn btn-secondary demo-btn"
-                                data-origin="New Delhi"
-                                data-destination="Noida"
-                        >
-                            New Delhi → Noida
                         </button>
                     </div>
                 </div>
@@ -1031,6 +1038,25 @@
       window.location.hostname === "localhost"
         ? ""
         : "https://ridevise-backend.onrender.com";
+
+window.onload = () => {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const userIdInput = document.getElementById("heroUserId");
+  if (userIdInput) {
+    userIdInput.value = userId;
+    userIdInput.readOnly = true;          // 🔒 non-changeable
+    userIdInput.style.background = "#f3f4f6"; // optional visual cue
+    userIdInput.style.cursor = "not-allowed";
+  }
+};
+
+
     const providersList = document.getElementById("providersList");
     const categoryHeadings = document.getElementById("categoryHeadings");
     const metaLine = document.getElementById("metaLine");
@@ -1062,11 +1088,11 @@
 // 1. Inputs restore karo
 const savedOrigin = localStorage.getItem('lastOrigin');
 const savedDestination = localStorage.getItem('lastDestination');
-const savedUserId = localStorage.getItem('lastUserId');
+
 
 if (savedOrigin) document.getElementById('heroOrigin').value = savedOrigin;
 if (savedDestination) document.getElementById('heroDestination').value = savedDestination;
-if (savedUserId) document.getElementById('heroUserId').value = savedUserId;
+
 
 // 2. Background, trail aur HINT ka logic
 const hasPreviousSearch = savedOrigin && savedDestination;

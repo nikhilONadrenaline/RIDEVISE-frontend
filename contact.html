@@ -4,21 +4,41 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Contact Us — FareComparator</title>
-    <link rel="stylesheet" href="contact.css" />
-</head>
+    <link rel="stylesheet" href="contact.css">
 <body>
+
 <div class="app-shell">
     <header class="app-nav">
         <div class="app-brand">
             <img src="logo.svg" alt="FareComparator Logo" class="app-logo" />
         </div>
+
+        <button class="nav-toggle" id="navToggle">☰</button>
+
         <nav class="app-nav-links">
+            <a href="compare.html">Compare</a>
+            <a href="history.html">History</a>
+            <a href="analytics.html">Analytics</a>
+            <a href="contact.html" class="active">Contact Us</a>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </nav>
+    </header>
+
+    <!-- Right Sidebar Menu -->
+    <div class="sidebar-menu" id="sidebarMenu">
+        <div class="sidebar-header">
+            <button class="close-btn" id="closeMenu">✕</button>
+        </div>
+        <div class="sidebar-links">
             <a href="index.html">Compare</a>
             <a href="history.html">History</a>
             <a href="analytics.html">Analytics</a>
             <a href="contact.html" class="active">Contact Us</a>
-        </nav>
-    </header>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <main class="app-main">
         <div class="card">
@@ -53,36 +73,15 @@
             <form id="contactForm" action="https://formspree.io/f/xgovnerl" method="POST">
                 <div class="form-group">
                     <label class="form-label" for="name">Your Name</label>
-                    <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            class="form-input"
-                            placeholder="Enter your name"
-                            required
-                    />
+                    <input type="text" id="name" name="name" class="form-input" placeholder="Enter your name" required />
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="email">Your Email</label>
-                    <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            class="form-input"
-                            placeholder="Enter your email"
-                            required
-                    />
+                    <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required />
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="message">Message</label>
-                    <textarea
-                            id="message"
-                            name="message"
-                            class="form-textarea"
-                            rows="5"
-                            placeholder="Write your message here"
-                            required
-                    ></textarea>
+                    <textarea id="message" name="message" class="form-textarea" rows="5" placeholder="Write your message here" required></textarea>
                 </div>
                 <button type="submit" class="submit-btn">Send Message</button>
             </form>
@@ -91,35 +90,62 @@
 </div>
 
 <script>
-    const API_BASE =
-      window.location.hostname === "localhost"
-        ? ""
-        : "https://ridevise-backend.onrender.com";
-    // Browser back pe scroll top pe le jaao
-    if ('scrollRestoration' in history) {
-        history.scrollRestoration = 'manual';
+// Sidebar Toggle - same as analytics & history
+const navToggle = document.getElementById('navToggle');
+const sidebarMenu = document.getElementById('sidebarMenu');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+const closeMenu = document.getElementById('closeMenu');
+
+function openSidebar() {
+    sidebarMenu.classList.add('active');
+    sidebarOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSidebar() {
+    sidebarMenu.classList.remove('active');
+    sidebarOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+if (navToggle && sidebarMenu && sidebarOverlay && closeMenu) {
+    navToggle.addEventListener('click', openSidebar);
+    closeMenu.addEventListener('click', closeSidebar);
+    sidebarOverlay.addEventListener('click', closeSidebar);
+
+    sidebarMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', closeSidebar);
+    });
+}
+
+// Existing scroll & form reset logic
+window.addEventListener('scroll', () => {
+    const nav = document.querySelector('.app-nav');
+    if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+    } else {
+        nav.classList.remove('scrolled');
     }
+});
 
-    window.addEventListener('load', () => {
-        window.scrollTo(0, 0);
-    });
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        document.getElementById('contactForm').reset();
+    }
+});
 
-    // Nav shadow on scroll
-    window.addEventListener('scroll', () => {
-        const nav = document.querySelector('.app-nav');
-        if (window.scrollY > 50) {
-            nav.classList.add('scrolled');
-        } else {
-            nav.classList.remove('scrolled');
-        }
-    });
+window.addEventListener('load', () => {
+    window.scrollTo(0, 0);
+});
+document.getElementById("logoutBtn")?.addEventListener("click", () => {
+  // Data hatao
+  localStorage.removeItem("userId");
+  sessionStorage.clear();
 
-    // 🔥 MAIN FIX: Back button se aane pe form khali kar do
-    window.addEventListener('pageshow', (event) => {
-        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-            document.getElementById('contactForm').reset();
-        }
-    });
+  // Sidha bhaga do
+  window.location.href = "index.html";
+});
+
 </script>
 </body>
 </html>

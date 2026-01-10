@@ -772,6 +772,22 @@
           flex: 1;
           min-height: 200px;
         }
+.logout-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.6);
+  color: #fff;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+}
         /* Mobile pe column ho jaaye */
         @media (max-width: 900px) {
           .results-main-row {
@@ -1126,4 +1142,5 @@
         padding-right: 140px;
     }
 }
+
 

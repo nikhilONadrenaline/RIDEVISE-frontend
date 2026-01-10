@@ -4,10 +4,11 @@ const API_BASE =
     : "https://ridevise-backend.onrender.com";
 
 // ====================
-// STORAGE KEYS - Sirf sessionStorage use karenge
+// STORAGE KEYS
 // ====================
 const STORAGE_KEYS = {
-  LAST_COMPARE_STATE: 'lastCompareState' // sab kuch yahin save hoga
+  LAST_COMPARE_STATE: 'lastCompareState',
+  LAST_CONFIRMED_CHOICE: 'lastConfirmedChoice'
 };
 
 // DOM Elements
@@ -44,6 +45,8 @@ let fixedProvidersHeight = null;
 window.addEventListener('load', () => {
   // 1. Session se state restore attempt
   const savedState = sessionStorage.getItem(STORAGE_KEYS.LAST_COMPARE_STATE);
+  const savedChoice = sessionStorage.getItem(STORAGE_KEYS.LAST_CONFIRMED_CHOICE);
+  
   if (savedState) {
     try {
       const parsed = JSON.parse(savedState);
@@ -70,16 +73,39 @@ window.addEventListener('load', () => {
         parsed.data?.recommendation?.chosenProviderId || null,
         parsed.data?.totalDistanceKm
       );
-      // Selected provider highlight restore
-      if (parsed.selectedProviderId) {
+      
+      // Agar pehle confirm kiya tha toh confirmed class laga do
+      if (savedChoice) {
+        const choiceData = JSON.parse(savedChoice);
+        const confirmedId = choiceData.chosenProviderId;
+        
+        if (choiceData.snapshotId === lastSnapshotId) {
+          selectedProviderId = confirmedId; // Lock kar do
+          document.querySelectorAll(".provider-card").forEach(c => {
+            c.classList.remove("selected", "confirmed");
+          });
+          const confirmedCard = document.querySelector(`.provider-card[data-provider-id="${confirmedId}"]`);
+          if (confirmedCard) {
+            confirmedCard.classList.add("confirmed");
+            // Confirm button disable kar do
+            confirmChoiceBtn.disabled = true;
+            confirmChoiceBtn.textContent = "Already Confirmed";
+            confirmChoiceBtn.style.background = "#6b7280";
+          }
+        }
+      } 
+      // Agar sirf select kiya tha lekin confirm nahi kiya
+      else if (parsed.selectedProviderId) {
         selectedProviderId = parsed.selectedProviderId;
         document.querySelector(`.provider-card[data-provider-id="${selectedProviderId}"]`)
           ?.classList.add('selected');
       }
+      
       // Map restore
       if (payload?.origin && payload?.destination) {
         updateRouteMap(payload.origin, payload.destination);
       }
+      
       // Scroll to results
       document.body.classList.remove("lock-scroll");
       document.getElementById("resultsSection")?.scrollIntoView({ behavior: "smooth" });
@@ -122,6 +148,19 @@ window.addEventListener('load', () => {
 // =============================================
 document.getElementById("heroForm").addEventListener("submit", (e) => {
   e.preventDefault();
+  
+  // Reset confirmation state
+  sessionStorage.removeItem(STORAGE_KEYS.LAST_CONFIRMED_CHOICE);
+  
+  // Confirm button reset
+  confirmChoiceBtn.disabled = false;
+  confirmChoiceBtn.textContent = "Confirm Choice";
+  confirmChoiceBtn.style.background = "#2563eb";
+  confirmChoiceBtn.style.cursor = "pointer";
+  
+  // Error messages clear
+  errorMessages.innerHTML = "";
+  
   const origin = document.getElementById("heroOrigin").value.trim();
   const destination = document.getElementById("heroDestination").value.trim();
   const userId = document.getElementById("heroUserId").value.trim() || null;
@@ -156,6 +195,14 @@ document.getElementById("heroForm").addEventListener("submit", (e) => {
 // MAIN COMPARE FUNCTION
 // =============================================
 async function doCompare(payload) {
+  // Pehle hero section ka class update karo
+  const heroSection = document.querySelector('.hero-section');
+  heroSection.classList.add('results-hidden');
+  
+  // Providers section ko show karo
+  const resultsSection = document.getElementById('resultsSection');
+  resultsSection.classList.add('show');
+  
   providersList.innerHTML = '<div class="text-muted" style="padding:1rem; grid-column: 1 / -1;">Loading providers...</div>';
   categoryHeadings.innerHTML = "";
   selectedProviderId = null;
@@ -257,6 +304,7 @@ function updateRouteMap(origin, destination) {
 
 function clearSessionState() {
   sessionStorage.removeItem(STORAGE_KEYS.LAST_COMPARE_STATE);
+  sessionStorage.removeItem(STORAGE_KEYS.LAST_CONFIRMED_CHOICE);
 }
 
 function createProviderCard(p, recommendedId, fastestProviderId) {
@@ -540,6 +588,15 @@ providersList.addEventListener("click", (e) => {
 
   const providerId = card.dataset.providerId;
   const data = JSON.parse(card.dataset.providerData || "{}");
+  
+  // Agar already confirmed hai toh click ignore karo
+  const savedChoice = sessionStorage.getItem(STORAGE_KEYS.LAST_CONFIRMED_CHOICE);
+  if (savedChoice) {
+    const choiceData = JSON.parse(savedChoice);
+    if (choiceData.snapshotId === lastSnapshotId && choiceData.chosenProviderId === providerId) {
+      return; // Confirmed option ko click nahi kar sakte
+    }
+  }
 
   if (selectedProviderId === providerId) {
     selectedProviderId = null;
@@ -684,20 +741,29 @@ detailOverlay.addEventListener("click", (e) => {
 });
 
 // =============================================
-// CONFIRM CHOICE
+// CONFIRM CHOICE - UPDATED VERSION
 // =============================================
 confirmChoiceBtn.addEventListener("click", async () => {
   errorMessages.innerHTML = "";
   let errors = [];
 
+  // Pehle check karo ki is ride ke liye already confirm toh nahi kiya
+  const savedChoice = sessionStorage.getItem(STORAGE_KEYS.LAST_CONFIRMED_CHOICE);
+  if (savedChoice) {
+    const choiceData = JSON.parse(savedChoice);
+    if (choiceData.snapshotId === lastSnapshotId) {
+      errors.push("You've already confirmed a choice for this ride.");
+    }
+  }
+
   if (!lastRequestPayload?.userId)
     errors.push("Enter UserID to save choices");
   if (!selectedProviderId)
-    errors.push("Please select a option before confirming");
+    errors.push("Please select an option before confirming");
 
   if (errors.length > 0) {
     errorMessages.innerHTML = errors
-      .map((err) => `<p>${err}</p>`)
+      .map((err) => `<p style="color: #dc2626; font-size: 0.9rem; margin: 0.3rem 0;">${err}</p>`)
       .join("");
     return;
   }
@@ -725,16 +791,42 @@ confirmChoiceBtn.addEventListener("click", async () => {
     });
 
     if (res.ok) {
-      document
-        .querySelectorAll(".provider-card")
-        .forEach((c) => c.classList.remove("selected"));
+      // 1. Sab cards se selected class hatao
+      document.querySelectorAll(".provider-card").forEach(c => {
+        c.classList.remove("selected");
+      });
 
-      document
-        .querySelector(
-          `.provider-card[data-provider-id="${selectedProviderId}"]`
-        )
-        ?.classList.add("confirmed");
+      // 2. Confirmed class lagaao
+      const confirmedCard = document.querySelector(
+        `.provider-card[data-provider-id="${selectedProviderId}"]`
+      );
+      if (confirmedCard) {
+        confirmedCard.classList.add("confirmed");
+      }
 
+      // 3. Confirm button lock karo
+      confirmChoiceBtn.disabled = true;
+      confirmChoiceBtn.textContent = "Already Confirmed";
+      confirmChoiceBtn.style.background = "#6b7280";
+      confirmChoiceBtn.style.cursor = "not-allowed";
+
+      // 4. Choice save karo session mein (reload ke liye)
+      sessionStorage.setItem(STORAGE_KEYS.LAST_CONFIRMED_CHOICE, JSON.stringify({
+        snapshotId: lastSnapshotId,
+        chosenProviderId: selectedProviderId,
+        confirmedAt: new Date().toISOString()
+      }));
+
+      // 5. Main state mein bhi update karo
+      const savedState = sessionStorage.getItem(STORAGE_KEYS.LAST_COMPARE_STATE);
+      if (savedState) {
+        const parsed = JSON.parse(savedState);
+        parsed.selectedProviderId = selectedProviderId;
+        parsed.confirmed = true;
+        sessionStorage.setItem(STORAGE_KEYS.LAST_COMPARE_STATE, JSON.stringify(parsed));
+      }
+
+      // 6. Success overlay dikhao
       const rawName = selectedProvider?.providerName || selectedProviderId || 'Unknown';
       const providerName = escapeHtml(rawName.replace(/\s*\(Mock\)/gi, '').trim());
       const price = Number(selectedProvider?.price || 0).toFixed(2);
@@ -762,13 +854,19 @@ confirmChoiceBtn.addEventListener("click", async () => {
         <div style="font-size: 0.9rem; color: #4b5563;">
             Your choice has been saved to your history.
         </div>
+        <div style="font-size: 0.85rem; color: #9ca3af; margin-top: 0.5rem;">
+            (Search again to confirm a different option)
+        </div>
       `;
 
       choiceSavedOverlay.classList.add("show");
+      
+      // 7. Error messages clear karo
+      errorMessages.innerHTML = "";
     }
   } catch (e) {
     console.error(e);
-    alert("Error saving choice.");
+    errorMessages.innerHTML = `<p style="color: #dc2626;">Error saving choice. Please try again.</p>`;
   }
 });
 
@@ -883,12 +981,23 @@ document
 
   delete window.stopTrail;
 })();
-
 // =============================================
 // DEMO BUTTONS
 // =============================================
 document.querySelectorAll(".demo-btn").forEach((btn) => {
   btn.addEventListener("click", () => {
+    // Reset confirmation state
+    sessionStorage.removeItem(STORAGE_KEYS.LAST_CONFIRMED_CHOICE);
+    
+    // Confirm button reset
+    confirmChoiceBtn.disabled = false;
+    confirmChoiceBtn.textContent = "Confirm Choice";
+    confirmChoiceBtn.style.background = "#2563eb";
+    confirmChoiceBtn.style.cursor = "pointer";
+    
+    // Error messages clear
+    errorMessages.innerHTML = "";
+    
     document.getElementById("heroOrigin").value = btn.dataset.origin;
     document.getElementById("heroDestination").value =
       btn.dataset.destination;

@@ -1,1 +1,320 @@
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+
+        :root {
+            --primary: #3B82F6;
+            --primary-dark: #2b5de7;
+            --accent: #a992df;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .app-shell {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .app-nav {
+            background: #0f1225;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            height: 76px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: bold;
+        }
+
+        .app-logo {
+            height: 32px;
+            width: auto;
+        }
+
+        .app-nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .app-nav-links a {
+            color: rgba(255, 255, 255, 0.82);
+            text-decoration: none;
+            font-size: 1.05rem;
+            position: relative;
+            padding: 0.5rem 0;
+            transition: color 0.3s ease;
+        }
+
+        .app-nav-links a:hover,
+        .app-nav-links a.active {
+            color: var(--accent);
+        }
+
+        .app-nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background: var(--accent);
+            transition: width 0.35s ease;
+        }
+
+        .app-nav-links a:hover::after,
+        .app-nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .sidebar-menu {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 320px;
+            height: 100%;
+            background: #0f1225;
+            color: white;
+            z-index: 1001;
+            transition: right 0.35s ease;
+            box-shadow: -8px 0 25px rgba(0,0,0,0.4);
+        }
+
+        .sidebar-menu.active {
+            right: 0;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem 1.2rem;
+            display: flex;
+            justify-content: flex-end;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2.2rem;
+            cursor: pointer;
+        }
+
+        .sidebar-links {
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            gap: 2.2rem;
+        }
+
+        .sidebar-links a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .sidebar-links a:hover,
+        .sidebar-links a.active {
+            color: var(--accent);
+            padding-left: 12px;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.35s ease;
+            z-index: 1000;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .app-main {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 1.3rem;
+            margin-bottom: 1.6rem;
+            border: 1px solid #e6e9ef;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 0 1.2rem 0;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #eef2f6;
+            border-radius: 10px;
+            padding: 1.2rem;
+            text-align: center;
+            transition: all 0.25s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+        .stat-card .text-muted {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card div:last-child {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--text);
+        }
+
+        .charts-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .chart-wrapper {
+            height: 500px;
+            width: 100%;
+            position: relative;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-wrapper canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #444;
+            z-index: 10;
+        }
+
+        .text-muted.small {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-top: 1rem;
+        }
+
+        select {
+            padding: 0.7rem 2.3rem 0.7rem 1rem;
+            font-size: 0.96rem;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background-color: white;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.8rem center;
+            background-size: 14px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .app-nav-links { display: none; }
+            .nav-toggle { display: block; }
+            .app-main { padding: 1.5rem 1rem; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .card-title { font-size: 1.55rem; }
+        }
+
+        @media (max-width: 560px) {
+            .summary-grid { grid-template-columns: 1fr; }
+            .chart-wrapper { height: 420px; }
+            .card-title { font-size: 1.4rem; }
+        }
+
+        @media (min-width: 769px) {
+            .app-brand { padding-left: 140px; }
+            .app-nav-links { padding-right: 140px; }
+        }
+        .logout-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.6);
+  color: #fff;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+}
+
 

@@ -772,22 +772,6 @@
           flex: 1;
           min-height: 200px;
         }
-.logout-btn {
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.6);
-  color: #fff;
-  padding: 0.4rem 0.9rem;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.logout-btn:hover {
-  background: #ef4444;
-  border-color: #ef4444;
-  color: #fff;
-}
         /* Mobile pe column ho jaaye */
         @media (max-width: 900px) {
           .results-main-row {
@@ -841,6 +825,22 @@
 .metro-walk-column {
             min-height: 120px; /* taaki heading hamesha dikhe */
         }
+        .logout-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.6);
+  color: #fff;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+}
        
         .no-option-message {
             text-align: center;
@@ -1074,6 +1074,43 @@
         min-height: 44px;
         min-width: 44px;
     }
+    .hero-section {
+        height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .hero-box {
+        margin-top: 0;
+        padding: 0 5vw;
+        transform: translateY(0);
+    }
+
+    .hero-title {
+        margin-top: 0;
+    }
+     #resultsSection {
+        display: none; /* Initially hidden on mobile */
+    }
+    
+    #resultsSection.show {
+        display: block; /* Show when search is done */
+        animation: fadeIn 0.5s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Hero section ko zyada space dena jab providers hidden hai */
+    .hero-section.results-hidden {
+        min-height: 90vh;
+        padding-bottom: 3rem;
+    }
+
 }
 
 /* Extra small devices */
@@ -1108,6 +1145,22 @@
     .quick-demo-section {
         margin: 0 0.5rem 1rem 0.5rem;
     }
+    .logout-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.6);
+  color: #fff;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+}
 }
 
 /* Very small devices */
@@ -1132,6 +1185,7 @@
         padding: 0 3vw;
     }
 }
+
 /* Desktop padding fix */
 @media (min-width: 769px) {
     .app-brand {
@@ -1142,5 +1196,461 @@
         padding-right: 140px;
     }
 }
+/* ===============================
+   MOBILE: VERTICAL LAYOUT
+   =============================== */
+@media (max-width: 768px) {
+    /* Providers list ko vertical banaye */
+    #providersList {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
+        gap: 2rem !important;
+    }
+    
+    /* Har category ka container */
+    .mobile-category-section {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    /* Category heading */
+    .mobile-category-heading {
+        font-size: 1.4rem !important;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    /* Cards grid within each category */
+    .mobile-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 0.8rem;
+        margin-top: 0.5rem;
+    }
+    
+    /* Provider cards - bigger on mobile */
+    .provider-card {
+        padding: 1rem !important;
+        font-size: 1rem !important;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .provider-name {
+        font-size: 1.1rem !important;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .fare {
+        font-size: 1.4rem !important;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0.5rem 0;
+    }
+    
+    .co2-info {
+        font-size: 0.95rem !important;
+        margin-top: 0.5rem;
+    }
+    
+    /* Badges bhi bade */
+    .best-badge {
+        font-size: 0.8rem !important;
+        padding: 0.2rem 0.6rem !important;
+        margin-left: 0.5rem;
+    }
+    
+    .fastest-icon {
+        font-size: 0.9rem !important;
+        margin-left: 0.5rem;
+    }
+    
+    /* Car category ko do columns mein */
+    .car-category-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .car-subcategory {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .car-subcategory-heading {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 0.8rem;
+        text-align: center;
+    }
+    
+    /* Metro/Walk section */
+    .metro-walk-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    /* No option message */
+    .no-option-message {
+        font-size: 1rem !important;
+        padding: 1.5rem !important;
+        background: #f1f5f9;
+        border-radius: 8px;
+        text-align: center;
+        color: #64748b;
+    }
+    
+    /* Meta line - bigger font */
+    #metaLine {
+        font-size: 1.3rem !important;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1rem;
+    }
+    
+    /* Card title */
+    .card-title {
+        font-size: 1.5rem !important;
+    }
+    
+    /* Demo buttons section */
+    .quick-demo-section {
+        margin: 1rem 0.5rem 2rem 0.5rem;
+    }
+    
+    .demo-btn {
+        font-size: 0.95rem !important;
+        padding: 0.8rem 1.2rem !important;
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Confirm button */
+    #confirmChoiceBtn {
+        font-size: 1.1rem !important;
+        padding: 0.8rem 1.5rem !important;
+        margin-top: 1rem;
+        width: 100%;
+    }
+    
+    /* Map container mobile pe bada */
+    #mapContainer {
+        height: 350px !important;
+        margin-top: 1rem;
+    }
+}
 
+/* Extra small devices */
+@media (max-width: 480px) {
+    .mobile-cards-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .provider-card {
+        min-height: 110px;
+    }
+    
+    .mobile-category-heading {
+        font-size: 1.3rem !important;
+    }
+    
+    .fare {
+        font-size: 1.3rem !important;
+    }
+}
 
+/* Tablet devices (768px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .mobile-cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+/* Smooth scroll for mobile */
+@media (max-width: 768px) {
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Providers section spacing */
+    #resultsSection.show {
+        padding-top: 1rem;
+        animation: slideUp 0.6s ease;
+    }
+    
+    @keyframes slideUp {
+        from { 
+            opacity: 0; 
+            transform: translateY(30px); 
+        }
+        to { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
+    }
+}
+/* ===============================
+   MOBILE: VERTICAL LAYOUT - WIDTH FIX
+   =============================== */
+@media (max-width: 768px) {
+    /* Providers list ko vertical banaye */
+    #providersList {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+        width: 100% !important;
+    }
+    
+    /* Har category ka container - FIXED WIDTH */
+    .mobile-category-section {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 1.2rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e5e7eb;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    
+    /* Category heading */
+    .mobile-category-heading {
+        font-size: 1.4rem !important;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+        width: 100%;
+    }
+    
+    /* Cards grid within each category */
+    .mobile-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 0.8rem;
+        margin-top: 0.5rem;
+        width: 100% !important;
+    }
+    
+    /* Provider cards - bigger on mobile */
+    .provider-card {
+        padding: 1rem !important;
+        font-size: 1rem !important;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Car category fix */
+    .car-category-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 100% !important;
+    }
+    
+    .car-subcategory {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Metro/Walk section fix */
+    .metro-walk-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100% !important;
+    }
+    
+    /* Special fix for the results card */
+    #resultsCard {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        padding: 1rem !important;
+    }
+    
+    /* Fix for providers wrapper */
+    .providers-wrapper {
+        width: 100% !important;
+        padding: 0 0.5rem !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Results main row fix */
+    .results-main-row {
+        margin: 0.5rem 0.5rem 1.5rem 0.5rem !important;
+        width: calc(100% - 1rem) !important;
+        box-sizing: border-box !important;
+        gap: 1rem !important;
+    }
+    
+    /* Quick demo section fix */
+    .quick-demo-section {
+        margin: 1rem 0.5rem 2rem 0.5rem !important;
+        width: calc(100% - 1rem) !important;
+        box-sizing: border-box !important;
+    }
+}
+
+/* Extra small devices - cards ko single column */
+@media (max-width: 480px) {
+    .mobile-cards-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.8rem !important;
+    }
+    
+    .mobile-category-section {
+        padding: 1rem !important;
+    }
+    
+    .car-subcategory {
+        padding: 0.8rem !important;
+    }
+}
+/* Minimalist small info button */
+@media (max-width: 768px) {
+    .info-circle {
+        width: 18px !important;
+        height: 18px !important;
+        border: 1px solid #3b82f6 !important;
+        border-radius: 50% !important;
+        background: #ffffff !important;
+        color: #3b82f6 !important;
+        font-weight: 600 !important;
+        font-size: 0.7rem !important;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+        z-index: 2;
+        padding: 0 !important;
+        margin: 0 !important;
+        line-height: 1 !important;
+    }
+    
+    .info-circle:hover {
+        background: #3b82f6 !important;
+        color: white !important;
+        transform: scale(1.05);
+    }
+    
+    /* Disclaimer text ko bhi adjust karo */
+    .disclaimer-wrapper .text-muted {
+        font-size: 0.85rem !important;
+        margin-left: 0.3rem;
+    }
+}/* ===============================
+   MOBILE: MAP CONTAINER FIX - 100% HEIGHT
+   =============================== */
+@media (max-width: 768px) {
+    /* Map wrapper aur card - height auto */
+    .map-wrapper {
+        order: -1;
+        width: 100% !important;
+        margin-bottom: 1rem;
+        height: auto !important;
+    }
+    
+    .map-wrapper > .card {
+        height: auto !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 1rem !important;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Map container - 100% height of its parent */
+    #mapContainer {
+        height: 350px !important; /* Fixed height */
+        width: 100% !important;
+        margin: 0 !important;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        flex: 1; /* Take all available space */
+    }
+    
+    /* Map container ke andar iframe - 100% fill */
+    #mapContainer iframe {
+        height: 100% !important;
+        width: 100% !important;
+        border: none !important;
+    }
+    
+    /* Card title fix */
+    .map-wrapper .card-header {
+        padding: 0 0 0.8rem 0 !important;
+        margin-bottom: 0.8rem;
+        border-bottom: 1px solid #e5e7eb;
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+}
+
+/* Different heights for different screen sizes */
+@media (max-width: 768px) and (max-height: 700px) {
+    /* Chhoti height wale devices */
+    #mapContainer {
+        height: 300px !important;
+    }
+}
+
+@media (max-width: 768px) and (min-height: 800px) {
+    /* Lambi height wale devices */
+    #mapContainer {
+        height: 400px !important;
+    }
+}
+
+/* Landscape mode */
+@media (max-width: 768px) and (orientation: landscape) {
+    #mapContainer {
+        height: 280px !important;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+    #mapContainer {
+        height: 320px !important;
+    }
+}
+
+/* Very small devices */
+@media (max-width: 360px) {
+    #mapContainer {
+        height: 280px !important;
+    }
+}
